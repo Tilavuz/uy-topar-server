@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Auth } from './auth.schema';
 import { Model } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
-import { AuthResponseDto } from './auth.dto';
+import { AuthCreateDto, AuthResponseDto, AuthUpdateDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +16,32 @@ export class AuthService {
 
   async findById(id: string): Promise<AuthResponseDto> {
     const auth = await this.authModel.findById(id).exec();
+    return plainToInstance(AuthResponseDto, auth);
+  }
+
+  async findByUsername(username: string): Promise<AuthResponseDto> {
+    const auth = await this.authModel.findOne({ username }).exec();
+    return plainToInstance(AuthResponseDto, auth);
+  }
+
+  async create(authCreateDto: AuthCreateDto): Promise<AuthResponseDto> {
+    const auth = await new this.authModel(authCreateDto);
+    return plainToInstance(AuthResponseDto, auth);
+  }
+
+  async update({
+    id,
+    authUpdateDto,
+  }: {
+    id: string;
+    authUpdateDto: AuthUpdateDto;
+  }): Promise<AuthResponseDto> {
+    const auth = this.authModel.findByIdAndUpdate(id, authUpdateDto).exec();
+    return plainToInstance(AuthResponseDto, auth);
+  }
+
+  async delete(id: string): Promise<AuthResponseDto> {
+    const auth = await this.authModel.findByIdAndDelete(id).exec();
     return plainToInstance(AuthResponseDto, auth);
   }
 }

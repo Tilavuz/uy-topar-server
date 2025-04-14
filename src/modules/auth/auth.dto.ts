@@ -15,6 +15,7 @@ export class AuthCreateDto {
 }
 
 export class AuthResponseDto {
+  _id: string;
   username: string;
   role: string;
 }
